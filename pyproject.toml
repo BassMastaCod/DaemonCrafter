@@ -6,7 +6,7 @@ build-backend = "pdm.backend"
 name = "DaemonCrafter"
 dynamic = ["version"]
 authors = [{name="Cody M Sommer", email="bassmastacod@gmail.com"}]
-description = "todo"
+description = "Cross-Platform Service Management"
 keywords = ["daemon", "system", "service", "manager", "systemd", "scm", "nssm", "winsw", "automation", "install", "logs", "Linux", "Windows", "cross-platform", "python", "script", "exe", "program", "application", "app", "fastapi", "api", "flask", "deploy", "deployment"]
 readme = "README.md"
 requires-python = ">=3.10"
