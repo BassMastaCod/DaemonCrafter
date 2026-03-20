@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 from xml.etree import ElementTree
 
-from daemon_crafter.providers import DaemonProvider
+from daemoncrafter.providers import DaemonProvider
 
 
 class SCMProvider(DaemonProvider):

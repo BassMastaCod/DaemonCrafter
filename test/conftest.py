@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 
-from daemon_crafter import DaemonCrafter
+from daemoncrafter import DaemonCrafter
 
 
 daemon_name = 'DaemonCrafter Test'

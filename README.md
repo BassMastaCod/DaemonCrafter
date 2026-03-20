@@ -28,12 +28,12 @@ pip install DaemonCrafter
 
 ```python
 from pathlib import Path
-from daemon_crafter import DaemonCrafter
+from daemoncrafter import DaemonCrafter
 
 # Create a daemon manager for your application
 daemon = DaemonCrafter(
-    name="my-app-service",
-    executable=Path("/path/to/your/application")
+  name="my-app-service",
+  executable=Path("/path/to/your/application")
 )
 
 # Install the service
@@ -47,12 +47,12 @@ daemon.start()
 
 # Check if it's running
 if daemon.is_running():
-    print("Service is running!")
+  print("Service is running!")
 
 # View recent logs
 logs = daemon.get_logs(lines=20)
 for log_line in logs:
-    print(log_line)
+  print(log_line)
 ```
 
 ## API Reference
@@ -89,14 +89,14 @@ DaemonCrafter(name: str, executable: Path, backend: Optional[type[DaemonProvider
 ### Custom Backend
 
 ```python
-from daemon_crafter import DaemonCrafter
-from daemon_crafter.linux import SystemdProvider
+from daemoncrafter import DaemonCrafter
+from daemoncrafter.linux import SystemdProvider
 
 # Force use of systemd even on other platforms
 daemon = DaemonCrafter(
-    name="my-service",
-    executable=Path("/usr/local/bin/myapp"),
-    backend=SystemdProvider
+  name="my-service",
+  executable=Path("/usr/local/bin/myapp"),
+  backend=SystemdProvider
 )
 ```
 

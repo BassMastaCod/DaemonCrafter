@@ -33,4 +33,4 @@ Issues = "https://github.com/BassMastaCod/DaemonCrafter/issues"
 source = "scm"
 
 [tool.pdm.build]
-includes = ["daemon_crafter/bin/*"]
+includes = ["daemoncrafter/bin/*"]

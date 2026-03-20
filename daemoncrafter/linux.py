@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-from daemon_crafter.providers import DaemonProvider
+from daemoncrafter.providers import DaemonProvider
 
 
 SERVICE_DIR = Path('/etc/systemd/system')

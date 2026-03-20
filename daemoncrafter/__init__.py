@@ -2,9 +2,9 @@ import platform
 from pathlib import Path
 from typing import Optional
 
-from daemon_crafter.linux import SystemdProvider
-from daemon_crafter.providers import DaemonProvider
-from daemon_crafter.windows import SCMProvider
+from daemoncrafter.linux import SystemdProvider
+from daemoncrafter.providers import DaemonProvider
+from daemoncrafter.windows import SCMProvider
 
 
 class DaemonCrafter:

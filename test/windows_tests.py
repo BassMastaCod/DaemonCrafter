@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from daemon_crafter.windows import SCMProvider
+from daemoncrafter.windows import SCMProvider
 
 
 def test_access_denied_msg(script: Path):

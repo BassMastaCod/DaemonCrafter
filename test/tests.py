@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from daemon_crafter import DaemonCrafter
+from daemoncrafter import DaemonCrafter
 
 
 TIMEOUT = 10
