@@ -1,4 +1,4 @@
-![DaemonCrafter Logo](logo.png)
+![Logo](https://raw.githubusercontent.com/BassMastaCod/DaemonCrafter/refs/heads/master/logo.png)
 
 A cross-platform Python library for managing system services and daemons with a unified interface.
 
