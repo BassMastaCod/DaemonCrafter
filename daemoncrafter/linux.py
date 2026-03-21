@@ -25,13 +25,14 @@ class SystemdProvider(DaemonProvider):
     def is_enabled(self) -> bool:
         return self._check('is-enabled')
 
-    def _create_service_files(self) -> None:
+    def _create_service_files(self, **command_args) -> None:
+        args = ' '.join(f'--{key}={value}' for key, value in command_args.items())
         content = f'''[Unit]
 Description={self.display_name}
 
 [Service]
 WorkingDirectory={self.working_directory}
-ExecStart={self.executable}
+ExecStart={self.executable} {args}
 Restart=always
 RestartSec=5
 User=root

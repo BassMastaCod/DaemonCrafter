@@ -38,7 +38,7 @@ def test_full_lifecycle(crafter: DaemonCrafter):
             crafter.get_logs()
 
         # Installation
-        crafter.install()
+        crafter.install(port=6814)
         wait_for(crafter.is_installed)
         assert crafter.is_running() is False
         assert crafter.is_enabled() is False

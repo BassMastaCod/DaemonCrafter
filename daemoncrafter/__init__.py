@@ -34,12 +34,14 @@ class DaemonCrafter:
         """
         return self.backend.is_installed()
 
-    def install(self) -> None:
+    def install(self, **command_args) -> None:
         """Installs an artifact as a daemon.
 
         An independent, system-level service is created for the artifact.
+
+        Additional command args can be provided to include them within the configuration.
         """
-        return self.backend.install()
+        return self.backend.install(**command_args)
 
     def uninstall(self) -> None:
         """Removes the daemon for the artifact.

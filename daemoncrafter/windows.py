@@ -43,7 +43,7 @@ class SCMProvider(DaemonProvider):
     def is_enabled(self) -> bool:
         return 'AUTO_START' in self._exec('qc', raise_on_failure=False).stdout
 
-    def _create_service_files(self) -> None:
+    def _create_service_files(self, **command_args) -> None:
         self._copy_winsw_executable()
 
         root = ElementTree.Element('service')
@@ -56,6 +56,8 @@ class SCMProvider(DaemonProvider):
         ElementTree.SubElement(root, 'executable').text = sys.executable
 
         args = ['-u', str(self.executable)]
+        for key, value in command_args.items():
+            args.append(f'--{key}={value}')
         ElementTree.SubElement(root, 'arguments').text = ' '.join(args)
 
         ElementTree.SubElement(root, 'logpath').text = r'%BASE%\logs'
