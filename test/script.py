@@ -1,6 +1,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import logging
 import signal
+import argparse
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,8 +29,12 @@ def run():
     signal.signal(signal.SIGINT, shutdown_handler)
     signal.signal(signal.SIGTERM, shutdown_handler)
 
-    server = HTTPServer(('127.0.0.1', 6814), Handler)
-    logging.info('Service started on port 6814')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int)
+    args = parser.parse_args()
+
+    server = HTTPServer(('127.0.0.1', args.port), Handler)
+    logging.info(f'Service started on port {args.port}')
     server.serve_forever()
 
 

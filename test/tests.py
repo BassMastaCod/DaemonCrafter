@@ -38,7 +38,7 @@ def test_full_lifecycle(crafter: DaemonCrafter):
             crafter.get_logs()
 
         # Installation
-        crafter.install()
+        crafter.install(port=6814)
         wait_for(crafter.is_installed)
         assert crafter.is_running() is False
         assert crafter.is_enabled() is False
@@ -88,6 +88,28 @@ def test_full_lifecycle(crafter: DaemonCrafter):
         logs = crafter.get_logs(3)
         assert len(logs) == 3
         assert logs[0] == '[INFO] Hello endpoint was called'
+    finally:
+        print('Running cleanup scripts.')
+        subprocess.call(['remove_service.bat'], shell=True)
+        time.sleep(5)
+        subprocess.call(['cleanup_files.bat'], shell=True)
+
+
+def test_asgi_daemon(asgi_crafter: DaemonCrafter):
+    """Test creating a daemon for a ASGI Application.
+
+    In case of test failure, the cleanup.bat script will automatically run to clean up resources.
+    """
+    try:
+        asgi_crafter.install(port=6814)
+        wait_for(asgi_crafter.is_installed)
+
+        asgi_crafter.start()
+        wait_for(asgi_crafter.is_running)
+
+        response = requests.get('http://localhost:6814/hello')
+        assert response.status_code == 200
+        assert response.text == 'Hello World from FastAPI'
     finally:
         print('Running cleanup scripts.')
         subprocess.call(['remove_service.bat'], shell=True)

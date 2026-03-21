@@ -5,10 +5,12 @@ from typing import Optional
 
 from str_case_util import Case
 
+from daemoncrafter.executables import Executable
+
 
 class DaemonProvider(ABC):
     """Abstract interface for OS-specific service backends."""
-    def __init__(self, name: str, executable: Path):
+    def __init__(self, name: str, executable: Path|Executable):
         self.display_name = name
         self.service_name = Case.SNAKE_CASE.format(name)
         self.executable = executable
@@ -65,13 +67,13 @@ class DaemonProvider(ABC):
         """See :meth:`DaemonCrafter.is_enabled`."""
         pass
 
-    def install(self) -> None:
+    def install(self, **command_args) -> None:
         """See :meth:`DaemonCrafter.install`."""
-        self._create_service_files()
+        self._create_service_files(**command_args)
         self._register_service()
 
     @abstractmethod
-    def _create_service_files(self) -> None:
+    def _create_service_files(self, **command_args) -> None:
         """Creates/Configures the files supporting the daemon."""
         pass
 
