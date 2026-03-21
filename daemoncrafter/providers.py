@@ -5,10 +5,12 @@ from typing import Optional
 
 from str_case_util import Case
 
+from daemoncrafter.executables import Executable
+
 
 class DaemonProvider(ABC):
     """Abstract interface for OS-specific service backends."""
-    def __init__(self, name: str, executable: Path):
+    def __init__(self, name: str, executable: Path|Executable):
         self.display_name = name
         self.service_name = Case.SNAKE_CASE.format(name)
         self.executable = executable

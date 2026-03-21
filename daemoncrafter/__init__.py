@@ -2,6 +2,7 @@ import platform
 from pathlib import Path
 from typing import Optional
 
+from daemoncrafter.executables import Executable
 from daemoncrafter.linux import SystemdProvider
 from daemoncrafter.providers import DaemonProvider
 from daemoncrafter.windows import SCMProvider
@@ -12,7 +13,7 @@ class DaemonCrafter:
 
     Unless specified, the backend provider is automatically selected based on the current OS.
     """
-    def __init__(self, name: str, executable: Path, backend: Optional[type[DaemonProvider]] = None):
+    def __init__(self, name: str, executable: Path|Executable, backend: Optional[type[DaemonProvider]] = None):
         if not backend:
             match platform.system().lower():
                 case 'linux':
@@ -23,7 +24,6 @@ class DaemonCrafter:
                     raise RuntimeError('Unsupported OS')
         self.backend = backend(name, executable)
         self.name = name
-        self.executable = executable
 
     def is_installed(self) -> bool:
         """Checks if the daemon is currently installed.
