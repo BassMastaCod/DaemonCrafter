@@ -21,4 +21,4 @@ def ASGIApp(
     target = f'{server} {file}:{app}'
     if public:
         target += ' --host 0.0.0.0'
-    return Executable(parent, f'-m {server} {file}:{app}')
+    return Executable(parent, f'-m {target}')
