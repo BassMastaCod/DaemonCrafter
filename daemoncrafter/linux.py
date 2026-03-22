@@ -46,12 +46,7 @@ WantedBy=multi-user.target
         self._exec('daemon-reexec')
         self._reload_systemd()
 
-    def uninstall(self) -> None:
-        self.stop()
-        self.disable()
-
-        if self.configuration.exists():
-            self.configuration.unlink()
+    def _unregister_service(self) -> None:
         self._reload_systemd()
 
     def get_logs(self, lines: int = 50, since: Optional[str] = None, until: Optional[str] = None) -> list[str]:

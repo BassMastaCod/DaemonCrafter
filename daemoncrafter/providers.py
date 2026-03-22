@@ -82,9 +82,20 @@ class DaemonProvider(ABC):
         """Registers the daemon with the OS's service manager."""
         pass
 
-    @abstractmethod
     def uninstall(self) -> None:
         """See :meth:`DaemonCrafter.uninstall`."""
+        self.stop()
+        self.disable()
+        self._remove_service_files()
+        self._unregister_service()
+
+    def _remove_service_files(self) -> None:
+        """Removes the service files created by :meth:`_create_service_files`."""
+        self.configuration.unlink(missing_ok=True)
+
+    @abstractmethod
+    def _unregister_service(self) -> None:
+        """Deconfigures the daemon from the OS's service manager."""
         pass
 
     def start(self) -> None:

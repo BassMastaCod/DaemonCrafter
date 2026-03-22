@@ -77,13 +77,12 @@ class SCMProvider(DaemonProvider):
            'DisplayName=', f'{self.display_name}'
         )
 
-    def uninstall(self) -> None:
-        self.stop()
-        self.disable()
+    def _remove_service_files(self) -> None:
+        self.winsw_executable.unlink(missing_ok=True)
+        super()._remove_service_files()
 
+    def _unregister_service(self) -> None:
         self._exec('delete')
-        if self.configuration.exists():
-            self.configuration.unlink()
 
     def enable(self) -> None:
         self._exec('config', 'start=', 'auto')
