@@ -70,7 +70,11 @@ class DaemonProvider(ABC):
     def install(self, **command_args) -> None:
         """See :meth:`DaemonCrafter.install`."""
         self._create_service_files(**command_args)
-        self._register_service()
+        try:
+            self._register_service()
+        except:
+            self._remove_service_files()
+            raise
 
     @abstractmethod
     def _create_service_files(self, **command_args) -> None:
