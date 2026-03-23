@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 from xml.etree import ElementTree
 
-from daemoncrafter.providers import DaemonProvider
+from daemoncrafter.providers import DaemonProvider, wait_for
 
 
 class SCMProvider(DaemonProvider):
@@ -78,8 +78,15 @@ class SCMProvider(DaemonProvider):
         )
 
     def _remove_service_files(self) -> None:
-        self.winsw_executable.unlink(missing_ok=True)
+        wait_for(lambda: self._safe_unlink_winsw_executable())
         super()._remove_service_files()
+
+    def _safe_unlink_winsw_executable(self) -> bool:
+        try:
+            self.winsw_executable.unlink(missing_ok=True)
+            return True
+        except:
+            return False
 
     def _unregister_service(self) -> None:
         self._exec('delete')
