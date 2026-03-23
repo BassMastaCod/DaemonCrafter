@@ -57,7 +57,7 @@ class SCMProvider(DaemonProvider):
 
         args = ['-u', str(self.executable)]
         for key, value in command_args.items():
-            args.append(f'--{key}={value}')
+            args.append(f'--{key} {value}')
         ElementTree.SubElement(root, 'arguments').text = ' '.join(args)
 
         ElementTree.SubElement(root, 'logpath').text = r'%BASE%\logs'
