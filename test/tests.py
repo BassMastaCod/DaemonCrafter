@@ -1,27 +1,16 @@
 import requests
 import subprocess
 import time
-from typing import Any
 
 import pytest
 
 from daemoncrafter import DaemonCrafter
-
-
-TIMEOUT = 10
+from daemoncrafter.providers import wait_for
 
 
 def read_last_line_logged(crafter: DaemonCrafter) -> str:
     """Read the last line logged by the daemon."""
     return crafter.get_logs(1)[-1]
-
-
-def wait_for(condition: callable, expected: Any = True):
-    start_time = time.time()
-    while condition() != expected:
-        if time.time() - start_time > TIMEOUT:
-            assert condition() == expected, f'Condition failed to meet expected result within time limit.'
-        time.sleep(0.5)
 
 
 def test_full_lifecycle(crafter: DaemonCrafter):
@@ -52,7 +41,7 @@ def test_full_lifecycle(crafter: DaemonCrafter):
         wait_for(lambda: read_last_line_logged(crafter), expected='[INFO] Service started on port 6814')
 
         crafter.stop()
-        wait_for(crafter.is_running, expected=False)
+        wait_for(crafter.is_running, False)
         assert crafter.is_installed() is True
         assert crafter.is_enabled() is False
         wait_for(lambda: read_last_line_logged(crafter), expected='[INFO] Service is shutting down...')
@@ -64,7 +53,7 @@ def test_full_lifecycle(crafter: DaemonCrafter):
         assert crafter.is_running() is False
 
         crafter.disable()
-        wait_for(crafter.is_enabled, expected=False)
+        wait_for(crafter.is_enabled, False)
         assert crafter.is_installed() is True
         assert crafter.is_running() is False
 
@@ -78,7 +67,7 @@ def test_full_lifecycle(crafter: DaemonCrafter):
 
         # Uninstallation
         crafter.uninstall()
-        wait_for(crafter.is_installed, expected=False)
+        wait_for(crafter.is_installed, False)
         assert crafter.is_running() is False
         assert crafter.is_enabled() is False
         assert read_last_line_logged(crafter) == '[INFO] Service is shutting down...'

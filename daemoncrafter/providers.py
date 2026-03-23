@@ -1,11 +1,23 @@
 import subprocess
+import time
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 from str_case_util import Case
 
 from daemoncrafter.executables import Executable
+
+
+TIMEOUT = 10
+
+
+def wait_for(condition: callable, expected: Any = True):
+    start_time = time.time()
+    while condition() != expected:
+        if time.time() - start_time > TIMEOUT:
+            raise TimeoutError(f'Condition failed to meet expected result within time limit.')
+        time.sleep(0.5)
 
 
 class DaemonProvider(ABC):
