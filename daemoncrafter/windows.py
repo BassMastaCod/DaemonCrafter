@@ -98,7 +98,7 @@ class SCMProvider(DaemonProvider):
         self._exec('config', 'start=', 'demand')
 
     def get_logs(self, lines: int = 50, since: Optional[str] = None, until: Optional[str] = None) -> list[str]:
-        log_file = self.working_directory / 'logs' / 'daemoncrafter_test.err.log'
+        log_file = self.working_directory / 'logs' / f'{self.service_name}.err.log'
         if not log_file.exists():
             raise FileNotFoundError(f'Log file {log_file} does not exist.')
 
