@@ -6,6 +6,7 @@ from typing import Optional, Any
 
 from str_case_util import Case
 
+from daemoncrafter.errors import ServiceNotRunning
 from daemoncrafter.executables import Executable
 
 
@@ -48,7 +49,12 @@ class DaemonProvider(ABC):
 
         :param action: The main action to take (e.g., start, stop, enable)
         :param args: The arguments to accompany the action
-        :param raise_on_failure: Whether to raise a CalledProcessError on non-zero exit status (default: True)
+        :param raise_on_failure: Whether to raise a DaemonError on non-zero exit status (default: True)
+        :raises PermissionError: If the user does not have permission to perform the action
+        :raises ServiceMissing: If the service cannot be found
+        :raises ServiceNotRunning: If the action fails because the service is not running
+        :raises ServiceAlreadyRunning: If the action fails because the service is already running
+        :raises DaemonError: For any other error non-zero exit status
         """
         return subprocess.run(self._command(action, *args), capture_output=True, text=True, check=raise_on_failure)
 
@@ -100,7 +106,10 @@ class DaemonProvider(ABC):
 
     def uninstall(self) -> None:
         """See :meth:`DaemonCrafter.uninstall`."""
-        self.stop()
+        try:
+            self.stop()
+        except ServiceNotRunning:
+            pass
         self.disable()
         self._remove_service_files()
         self._unregister_service()

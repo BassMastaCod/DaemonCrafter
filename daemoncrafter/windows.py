@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 from xml.etree import ElementTree
 
+from daemoncrafter.errors import DaemonError, ServiceMissing, ServiceNotRunning, ServiceAlreadyRunning
 from daemoncrafter.providers import DaemonProvider, wait_for
 
 
@@ -21,18 +22,24 @@ class SCMProvider(DaemonProvider):
         return ['sc', action, self.service_name, *args]
 
     def _exec(self, action: str, *args: str, raise_on_failure: bool = True) -> subprocess.CompletedProcess:
-        """Override base _exec to provide better error messages for Windows-specific errors."""
         try:
             return super()._exec(action, *args, raise_on_failure=raise_on_failure)
         except subprocess.CalledProcessError as e:
-            if e.returncode == 5:
-                raise PermissionError(
-                    f'Access denied when trying to {action} service "{self.service_name}". '
-                    f'This operation requires administrator privileges. '
-                    f'Please run this command as an administrator or from an elevated command prompt.'
-                ) from e
-            else:
-                raise
+            match e.returncode:
+                case 5:
+                    raise PermissionError(
+                        f'Access denied when trying to {action} service "{self.service_name}". '
+                        f'This operation requires administrator privileges. '
+                        f'Please run this command as an administrator or from an elevated command prompt.'
+                    ) from e
+                case 1060:
+                    raise ServiceMissing(f'Service "{self.service_name}" does not exist.', self.service_name) from e
+                case 1062:
+                    raise ServiceNotRunning(f'Service "{self.service_name}" is not running.', self.service_name) from e
+                case 1056:
+                    raise ServiceAlreadyRunning(f'Service "{self.service_name}" is already running.', self.service_name) from e
+                case _:
+                    raise DaemonError(e.stderr, self.service_name) from e
 
     def is_installed(self) -> bool:
         return not self._check('query', code=1060)
@@ -98,7 +105,7 @@ class SCMProvider(DaemonProvider):
         self._exec('config', 'start=', 'demand')
 
     def get_logs(self, lines: int = 50, since: Optional[str] = None, until: Optional[str] = None) -> list[str]:
-        log_file = self.working_directory / 'logs' / 'daemoncrafter_test.err.log'
+        log_file = self.working_directory / 'logs' / f'{self.service_name}.err.log'
         if not log_file.exists():
             raise FileNotFoundError(f'Log file {log_file} does not exist.')
 

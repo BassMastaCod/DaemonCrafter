@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+from daemoncrafter.errors import ServiceMissing, ServiceAlreadyRunning, ServiceNotRunning, DaemonError
 from daemoncrafter.providers import DaemonProvider
 
 
@@ -15,6 +16,25 @@ class SystemdProvider(DaemonProvider):
 
     def _command(self, action: str, *args: str) -> list[str]:
         return ['systemctl', action, *args, self.service_name]
+
+    def _exec(self, action: str, *args: str, raise_on_failure: bool = True) -> subprocess.CompletedProcess:
+        try:
+            return super()._exec(action, *args, raise_on_failure=raise_on_failure)
+        except subprocess.CalledProcessError as e:
+            match e.returncode:
+                case 4:
+                    raise PermissionError(
+                        f'Access denied when trying to {action} service "{self.service_name}". '
+                        f'This operation requires root privileges. '
+                        f'Run this command with sudo or as root.'
+                    ) from e
+                case 5:
+                    raise ServiceMissing(
+                        f'Service "{self.service_name}" does not exist.',
+                        self.service_name
+                    ) from e
+                case _:
+                    raise DaemonError(e.stderr, self.service_name) from e
 
     def is_installed(self) -> bool:
         return not self._check('status', code=4)

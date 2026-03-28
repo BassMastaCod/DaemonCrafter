@@ -5,6 +5,7 @@ import time
 import pytest
 
 from daemoncrafter import DaemonCrafter
+from daemoncrafter.errors import ServiceMissing, ServiceNotRunning, ServiceAlreadyRunning
 from daemoncrafter.providers import wait_for
 
 
@@ -99,6 +100,52 @@ def test_asgi_daemon(asgi_crafter: DaemonCrafter):
         response = requests.get('http://localhost:6814/hello')
         assert response.status_code == 200
         assert response.text == 'Hello World from FastAPI'
+    finally:
+        print('Running cleanup scripts.')
+        subprocess.call(['remove_service.bat'], shell=True)
+        time.sleep(5)
+        subprocess.call(['cleanup_files.bat'], shell=True)
+
+
+def test_uninstall(crafter: DaemonCrafter):
+    try:
+        assert crafter.is_installed() is False
+        crafter.install(port=6814)
+        crafter.uninstall()
+        wait_for(crafter.is_installed, False)
+    finally:
+        print('Running cleanup scripts.')
+        subprocess.call(['remove_service.bat'], shell=True)
+        time.sleep(5)
+        subprocess.call(['cleanup_files.bat'], shell=True)
+
+
+def test_errors(crafter: DaemonCrafter):
+    try:
+        assert crafter.is_installed() is False
+
+        with pytest.raises(ServiceMissing):
+            crafter.start()
+        with pytest.raises(ServiceMissing):
+            crafter.stop()
+        with pytest.raises(ServiceMissing):
+            crafter.enable()
+        with pytest.raises(ServiceMissing):
+            crafter.disable()
+        with pytest.raises(ServiceMissing):
+            crafter.uninstall()
+
+        crafter.install(port=6814)
+        wait_for(crafter.is_installed)
+
+        with pytest.raises(ServiceNotRunning):
+            crafter.stop()
+
+        crafter.start()
+        wait_for(crafter.is_running)
+
+        with pytest.raises(ServiceAlreadyRunning):
+            crafter.start()
     finally:
         print('Running cleanup scripts.')
         subprocess.call(['remove_service.bat'], shell=True)
