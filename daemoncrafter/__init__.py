@@ -21,7 +21,7 @@ class DaemonCrafter:
                 case 'windows':
                     backend = SCMProvider
                 case _:
-                    raise RuntimeError('Unsupported OS')
+                    raise NotImplementedError('Unsupported OS')
         self.backend = backend(name, executable)
         self.name = name
 
